@@ -66,7 +66,7 @@ wallet_data = {
 
 # Prepare input
 df = pd.DataFrame([wallet_data])
-exclude_columns = ['to_unique_wallet', 'from_unique_wallet']
+exclude_columns = ['isSC']
 columns_to_scale = [col for col in df.columns if col not in exclude_columns]
 df[columns_to_scale] = scaler.transform(df[columns_to_scale])
 
