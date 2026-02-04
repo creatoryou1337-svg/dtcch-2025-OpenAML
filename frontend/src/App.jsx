@@ -10,7 +10,7 @@ function App() {
 
   const checkAddress = async () => {
     if (!address.trim()) {
-      setError('Введите адрес')
+      setError('Введите адрес кошелька')
       return
     }
 
@@ -28,7 +28,7 @@ function App() {
       setError(
         err.response?.data?.detail ||
         err.message ||
-        'Ошибка связи с сервером'
+        'Ошибка соединения с сервером'
       )
     } finally {
       setLoading(false)
@@ -38,31 +38,50 @@ function App() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#000',
-      color: '#fff',
-      fontFamily: 'system-ui, sans-serif',
-      padding: '20px'
+      background: '#000000',
+      color: '#ffffff',
+      fontFamily: 'system-ui, sans-serif'
     }}>
+      {/* Шапка в стиле RedWallet */}
       <header style={{
+        padding: '16px 20px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '16px 20px',
         background: '#0a0a0a',
-        borderBottom: '1px solid #222'
+        borderBottom: '1px solid #222222'
       }}>
-        <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#e53935' }}>
-          <span style={{ marginRight: '8px' }}>R</span> OpenAML
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '1.6rem',
+          fontWeight: 'bold',
+          color: '#e53935'
+        }}>
+          <div style={{
+            width: '32px',
+            height: '32px',
+            background: '#e53935',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: '1.4rem'
+          }}>R</div>
+          OpenAML
         </div>
-        <div style={{ fontSize: '1.4rem' }}>💬</div>
+        <div style={{ fontSize: '1.4rem', cursor: 'pointer' }}>💬</div>
       </header>
 
-      <main style={{ maxWidth: '500px', margin: '40px auto' }}>
+      {/* Основной контент */}
+      <main style={{ maxWidth: '480px', margin: '40px auto', padding: '0 20px' }}>
         <div style={{
-          background: '#111',
+          background: '#111111',
           borderRadius: '16px',
           padding: '32px 24px',
-          border: '1px solid #222',
+          border: '1px solid #222222',
           boxShadow: '0 8px 32px rgba(229,57,53,0.1)'
         }}>
           <h1 style={{
@@ -74,8 +93,9 @@ function App() {
             Проверка адреса на AML-риски
           </h1>
 
+          {/* Поле адреса */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#aaa', fontWeight: 500 }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#aaaaaa', fontWeight: 500 }}>
               Адрес кошелька
             </label>
             <input
@@ -87,16 +107,17 @@ function App() {
                 width: '100%',
                 padding: '14px 16px',
                 background: '#0a0a0a',
-                border: '1px solid #333',
+                border: '1px solid #333333',
                 borderRadius: '10px',
-                color: '#fff',
+                color: '#ffffff',
                 fontSize: '1.05rem'
               }}
             />
           </div>
 
+          {/* Выбор сети */}
           <div style={{ marginBottom: '32px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#aaa', fontWeight: 500 }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#aaaaaa', fontWeight: 500 }}>
               Сеть
             </label>
             <select
@@ -106,9 +127,9 @@ function App() {
                 width: '100%',
                 padding: '14px 16px',
                 background: '#0a0a0a',
-                border: '1px solid #333',
+                border: '1px solid #333333',
                 borderRadius: '10px',
-                color: '#fff',
+                color: '#ffffff',
                 fontSize: '1.05rem'
               }}
             >
@@ -120,13 +141,14 @@ function App() {
             </select>
           </div>
 
+          {/* Кнопка */}
           <button
             onClick={checkAddress}
             disabled={loading || !address.trim()}
             style={{
               width: '100%',
               padding: '16px',
-              background: loading ? '#444' : '#e53935',
+              background: loading ? '#444444' : '#e53935',
               color: 'white',
               border: 'none',
               borderRadius: '10px',
@@ -139,6 +161,7 @@ function App() {
             {loading ? 'Проверка...' : 'Проверить на риски'}
           </button>
 
+          {/* Ошибка */}
           {error && (
             <div style={{
               marginTop: '24px',
@@ -152,15 +175,16 @@ function App() {
             </div>
           )}
 
+          {/* Результат */}
           {result && (
             <div style={{
               marginTop: '32px',
               padding: '24px',
               background: '#0a0a0a',
               borderRadius: '12px',
-              border: '1px solid #222'
+              border: '1px solid #222222'
             }}>
-              <h3 style={{ color: '#e53935', marginBottom: '16px' }}>Результат</h3>
+              <h3 style={{ color: '#e53935', marginBottom: '16px' }}>Результат проверки</h3>
               <p><strong>Адрес:</strong> {result.address}</p>
               <p><strong>Сеть:</strong> {result.chain}</p>
               <p>
@@ -170,14 +194,13 @@ function App() {
                          result.risk_score > 0.3 ? '#ffb300' : 
                          '#66bb6a',
                   fontWeight: 'bold',
-                  fontSize: '1.3rem'
+                  fontSize: '1.4rem'
                 }}>
                   {result.risk_score}
                 </span>
               </p>
               <p><strong>Категория:</strong> <strong>{result.category}</strong></p>
-              {result.reason && <p><strong>Причина:</strong> {result.reason}</p>}
-              {result.note && <p style={{ color: '#888', marginTop: '16px' }}>{result.note}</p>}
+              {result.note && <p style={{ color: '#888888', marginTop: '16px' }}>{result.note}</p>}
             </div>
           )}
         </div>
