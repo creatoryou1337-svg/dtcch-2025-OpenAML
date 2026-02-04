@@ -12,5 +12,14 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  // Отключаем любые storage в Vite internals
+  optimizeDeps: {
+    exclude: ['localStorage', 'sessionStorage']
+  },
+  build: {
+    rollupOptions: {
+      external: ['localStorage', 'sessionStorage']
+    }
   }
 })
