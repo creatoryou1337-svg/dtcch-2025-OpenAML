@@ -1,11 +1,176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenAML — Проверка</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAML — Проверка адреса</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+    header {
+      padding: 16px 20px;
+      background: #0a0a0a;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #e53935;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      background: #e53935;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    main {
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: #111;
+      border-radius: 16px;
+      padding: 32px 24px;
+      border: 1px solid #222;
+      box-shadow: 0 8px 32px rgba(229,57,53,0.1);
+    }
+    h1 {
+      color: #e53935;
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 1.8rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #aaa;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #444;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 32px;
+      padding: 24px;
+      background: #0a0a0a;
+      border-radius: 12px;
+      border: 1px solid #222;
+      line-height: 1.6;
+    }
+    .error { color: #ff5252; }
+    .success strong { color: #66bb6a; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-circle">R</div>
+      OpenAML
+    </div>
+    <div>💬</div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1>Проверка адреса на AML-риски</h1>
+
+      <label>Адрес кошелька</label>
+      <input id="address" type="text" placeholder="0x1234... или bc1q..." />
+
+      <label>Сеть</label>
+      <select id="chain">
+        <option value="ETH">Ethereum</option>
+        <option value="BTC">Bitcoin</option>
+        <option value="TRX">TRON</option>
+        <option value="BSC">BSC</option>
+      </select>
+
+      <button id="checkBtn" onclick="checkAddress()">Проверить</button>
+
+      <div id="result"></div>
+    </div>
+  </main>
+
+  <script>
+    async function checkAddress() {
+      const address = document.getElementById('address').value.trim();
+      const chain = document.getElementById('chain').value;
+      const btn = document.getElementById('checkBtn');
+      const result = document.getElementById('result');
+
+      if (!address) {
+        result.innerHTML = '<div class="error">Введите адрес</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Проверка...';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/check-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, chain })
+        });
+
+        if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
+
+        const data = await res.json();
+
+        result.innerHTML = `
+          <div class="success">
+            <strong>Адрес:</strong> ${data.address}<br>
+            <strong>Risk Score:</strong> ${data.risk_score || '—'}<br>
+            <strong>Категория:</strong> ${data.category || '—'}<br>
+            ${data.note ? `<small>${data.note}</small>` : ''}
+          </div>
+        `;
+      } catch (e) {
+        result.innerHTML = `<div class="error">Ошибка: ${e.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Проверить';
+      }
+    }
+  </script>
+</body>
 </html>
